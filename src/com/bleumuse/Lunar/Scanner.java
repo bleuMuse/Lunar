@@ -91,6 +91,30 @@ public class Scanner {
             case '>':
                 addToken(match('=') ? GREATER_EQUAL : GREATER);
                 break;
+            // handle operation for division
+            case '/':
+                // this matches a comment, no token to add
+                if (match('/')) { // entering comment handling logic (peeked character is a '/')
+                    // continue to consume the characters of the comment until '\n' is reached or
+                    // EOF, effectively ignoring the comment
+                    while (peek() != '\n' && !isAtEnd()) // one character of lookahead, does not consume the peeked character here
+                        advance(); // now consume the character and advance the current pointer
+                // current is updated to point to the first character following the comment
+                } else {
+                    // it is the division operator
+                    addToken(SLASH);
+                }
+                break;
+            // handle newlines and other spaces
+            case ' ':
+            case '\r':
+            case '\t':
+                // Ignore whitespace
+                break;
+
+            case '\n':
+                line++;
+                break;
             default:
                 Lunar.error(line, "Unexpected character.");
                 break;
@@ -101,6 +125,7 @@ public class Scanner {
      * Examines the current character pointed to by the counter current
      * and returns the boolean true if it is equal to the character specified
      * and consumes the character if matched, returns false otherwise.
+     * 
      * @param expected The character to match
      * @return true if the current character does not equal argument specified
      */
@@ -112,6 +137,17 @@ public class Scanner {
 
         current++;
         return true;
+    }
+
+    /**
+     * Provides a one-character lookahead in the input stream without consuming it.
+     * @return The null character '\0' if current is out of bounds and isAtEnd() returns true,
+     * otherwise returns the currently examined character without consuming it
+     */
+    private char peek() {
+        if (isAtEnd())
+            return '\0';
+        return source.charAt(current);
     }
 
     /**
