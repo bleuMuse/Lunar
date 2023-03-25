@@ -49,7 +49,7 @@ public class Scanner {
      * 
      * @return This object's list of tokens
      */
-    private List<Token> scanTokens() {
+    public List<Token> scanTokens() {
         while (!isAtEnd()) {
             // We are at the beginning of the next lexeme
             start = current; // start is updated to the index of the last character of the previous lexeme
