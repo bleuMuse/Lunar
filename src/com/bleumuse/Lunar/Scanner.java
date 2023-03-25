@@ -119,12 +119,16 @@ public class Scanner {
             case '/':
                 // this matches a comment, no token to add
                 if (match('/')) { // entering comment handling logic (peeked character is a '/')
-                    // continue to consume the characters of the comment until '\n' is reached or
-                    // EOF, effectively ignoring the comment
-                    while (peek() != '\n' && !isAtEnd()) // one character of lookahead, does not consume the peeked
-                                                         // character here
-                        advance(); // now consume the character and advance the current pointer
-                    // current is updated to point to the first character following the comment
+                    // continue to consume the characters of the comment until newline is reached or EOF, effectively ignoring the comment
+                    while (peek() != '\n' && !isAtEnd()) // one character of lookahead, does not consume the peeked character here
+                        // now consume the character and advance the current pointer
+                        advance(); 
+                // this matches a block-comment, no token to add
+                } else if (match('*')) { 
+                    // entering block-comment handling logic 
+                    while (peek() != '*' && peekNext() != '/' && !isAtEnd()) // one and two-character lookahead
+                        advance();
+                // current is updated to point to the first character following the comment
                 } else {
                     // it is the division operator
                     addToken(SLASH);
