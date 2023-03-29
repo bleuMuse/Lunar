@@ -127,7 +127,11 @@ public class Scanner {
                 } else if (match('*')) { 
                     // entering block-comment handling logic 
                     while (peek() != '*' && peekNext() != '/' && !isAtEnd()) // one and two-character lookahead
+                        // advance twice for the two characters examined
                         advance();
+                        advance();
+                    // advance past the final slash '/' 
+                    advance();
                 // current is updated to point to the first character following the comment
                 } else {
                     // it is the division operator
@@ -265,8 +269,8 @@ public class Scanner {
     /**
      * Provides a one-character lookahead in the input stream without consuming it.
      * @return The null character '\0' if current is out of bounds and isAtEnd()
-     *         returns true, otherwise returns the currently examined character
-     *         without consuming it
+     * returns true, otherwise returns the currently examined character
+     * without consuming it
      */
     private char peek() {
         if (isAtEnd())
