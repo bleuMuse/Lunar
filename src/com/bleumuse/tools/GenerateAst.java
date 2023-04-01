@@ -49,6 +49,9 @@ public class GenerateAst {
         // write the abstract base class definition
         writer.println("abstract class " + baseName + " {");
 
+        //
+        defineVisitor(writer, baseName, types);
+
         // Generate an AST class for each type
         for (String type : types) {
             String className = type.split(":")[0].trim();
@@ -56,16 +59,44 @@ public class GenerateAst {
             defineType(writer, baseName, className, fields);
         }
 
+        // The base accept() method
+        writer.println();
+        writer.println("  abstract <R> R accept(Visitor<R> visitor);");
+
         writer.println("}");
         writer.close();
     }
 
     /**
+     * Defines a visitor interface for the given types and writes it to the given
+     * PrintWriter.
+     *
+     * @param writer   the PrintWriter object to write the visitor interface to
+     * @param baseName the base name for the visitor methods
+     * @param types    a list of strings representing the types to define visitor
+     *                 methods for
+     */
+    private static void defineVisitor(
+            PrintWriter writer, String baseName, List<String> types) {
+        writer.println("  interface Visitor<R> {");
+
+        for (String type : types) {
+            String typeName = type.split(":")[0].trim();
+            writer.println("    R visit" + typeName + baseName + "(" +
+                    typeName + " " + baseName.toLowerCase() + ");");
+        }
+
+        writer.println("  }");
+    }
+
+    /**
      * Generates the code for an AST class and writes it to the output file.
-     * @param writer A PrintWriter object that is used to write to the output file.
-     * @param baseName The base name for the generated classes.
+     * 
+     * @param writer    A PrintWriter object that is used to write to the output file.
+     * @param baseName  The base name for the generated classes.
      * @param className The name of the AST class being generated.
-     * @param fieldList A string containing a comma-separated list of field declarations for the AST class.
+     * @param fieldList A string containing a comma-separated list of field
+     *                  declarations for the AST class.
      */
     private static void defineType(
             PrintWriter writer, String baseName,
@@ -84,6 +115,14 @@ public class GenerateAst {
             writer.println("      this." + name + " = " + name + ";");
         }
 
+        writer.println("    }");
+
+        // Visitor pattern.
+        writer.println();
+        writer.println("    @Override");
+        writer.println("    <R> R accept(Visitor<R> visitor) {");
+        writer.println("      return visitor.visit" +
+                className + baseName + "(this);");
         writer.println("    }");
 
         // Write the field definitions
