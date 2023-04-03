@@ -8,20 +8,18 @@ import java.util.List;
  * represents an individual lexeme or token and no further. A non-terminal recurses back
  * and leads to another set of rules. The resulting derivation or sequence of string from 
  * the set of productions is terminated with a semicolon.
+ * 
+ * Expr
+ *  \_ Binary
+ *  \_ Grouping
+ *  \_ Literl
+ *  \_ Unary
  */
 abstract class Expr {
 
-  /**
-   * The Visitor interface defines the set of abstract methods
-   * to perform operations for each of the grammar structures. Additional
-   * implementing Visitor subclasses must have its behavior declared here.
-   */
-  interface Visitor<R> {
-    R visitBinaryExpr(Binary expr);
-    R visitGroupingExpr(Grouping expr);
-    R visitLiteralExpr(Literal expr);
-    R visitUnaryExpr(Unary expr);
-  }
+  // each implementing visitable class must define
+  // functionality for the accept() method
+  abstract <R> R accept(Visitor<R> visitor);
 
   /**
    * Binary expr is a recursive structure and may be used to generate 
@@ -38,7 +36,8 @@ abstract class Expr {
     }
 
     /**
-     * Performs task on Binary Expression
+     * Performs task on Binary Expression, passing itself 
+     * or its own instance as the "visitor"
      */
     @Override
     <R> R accept(Visitor<R> visitor) {
@@ -61,7 +60,8 @@ abstract class Expr {
     }
 
     /**
-     * Performs task on Grouping Expression
+     * Performs task on Grouping Expression, passing itself 
+     * or its own instance as the "visitor"
      */
     @Override
     <R> R accept(Visitor<R> visitor) {
@@ -83,7 +83,8 @@ abstract class Expr {
     }
 
     /**
-     * Performs task on Literal 
+     * Performs task on Literal, passing itself 
+     * or its own instance as the "visitor"
      */
     @Override
     <R> R accept(Visitor<R> visitor) {
@@ -105,7 +106,8 @@ abstract class Expr {
     }
 
     /**
-     * Performs task on Unary Expression
+     * Performs task on Unary Expression, passing itself 
+     * or its own instance as the "visitor"
      */
     @Override
     <R> R accept(Visitor<R> visitor) {
@@ -115,7 +117,4 @@ abstract class Expr {
     final Token operator;
     final Expr right;
   }
-
-  // each visitor class must implement the abstract accept() method
-  abstract <R> R accept(Visitor<R> visitor);
 }
